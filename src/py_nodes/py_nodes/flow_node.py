@@ -53,6 +53,8 @@ class FlowDetector(Node):
         #--- Assuming image is 320x240
         try:
             cv_image = self.bridge.imgmsg_to_cv2(data, "bgr8")
+            #cv2.imshow("Camera", cv_image)
+            #cv2.waitKey(1)
         except CvBridgeError as e:
             print(e)
         (rows,cols,channels) = cv_image.shape
@@ -67,11 +69,17 @@ class FlowDetector(Node):
             cv_image    = draw_frame(cv_image)
             
             cv_image    = draw_keypoints(cv_image, keypoints) 
-        try:
-            #self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "brg8"))
-            self.image_pub.publish(self.bridge.cv2_to_imgmsg(mask, "brg8"))
-        except CvBridgeError as e:
-            print(e)
+            try:
+                cv2.imshow("Frame overlay", cv_image)
+                cv2.imshow("Mask", mask)
+                cv2.waitKey(1)
+                #self.image_pub.publish(cv_image)
+                self.get_logger().info("Publishing mask & image")
+                mask_message = self.bridge.cv2_to_imgmsg(mask, encoding="passthrough")
+                self.mask_pub.publish(mask_message)
+                self.image_pub.publish(self.bridge.cv2_to_imgmsg(cv_image, "bgr8"))
+            except CvBridgeError as e:
+                print(e)
 
         for i, keyPoint in enumerate(keypoints):
             #--- Here you can implement some tracking algorithm to filter multiple detections
