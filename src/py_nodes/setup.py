@@ -23,7 +23,9 @@ setup(
         'console_scripts': [
         	'flow_find = py_nodes.flow_node:main',
         	'point = py_nodes.point_node:main',
-        	'mask = py_nodes.mask_node:main'
+        	'mask = py_nodes.mask_node:main',
+        	'keycontrol = py_nodes.KeypressControl:main',
+        	'teleoppump = py_nodes.teleop_pumps:main'
         ],
     },
 )
