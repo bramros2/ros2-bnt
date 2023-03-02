@@ -10,14 +10,12 @@ class KeyController(Node):
         super().__init__('key_controller')
         # subscribe to keyboard input topic
         self.pumps_initialized = False
-        self.subscription = self.create_subscription(String, '/keyboard_input',  self.keyboard_input_callback, 1)
+        self.subscription = self.create_subscription('/keyboard_input', String, self.keyboard_input_callback)
 
-        
-        self.ser = serial.Serial('/dev/ttyUSB0' , 115200, timeout=1) 
-        self.init_pumps(self.ser)
-             
 
-    def init_pumps(self,ser):
+        self.ser = serial.Serial('/dev/ttyyUSB0', 115200, timeout=1)        #TODO: check if serial is correct, make function to find available serial port
+
+    def init_pumps(self):
         setup_gcode = '''
         ; This code is used to setup the pumps in each python script
         ; You can manually edit this, but some settings (like M92) are overwritten later
@@ -39,28 +37,34 @@ class KeyController(Node):
             if command.startswith(';') or command == '\n':
                 return
             command_bytes = command.encode() + b'\n'
-            ser.write(command_bytes)
-            response = ser.readline()
-            self.get_logger().info('Serial response:')
-            self.get_logger().info(response)
+            self.ser.write(command_bytes)
+            response = self.ser.readline()
+            self.get_logger().info('Serial response:', response)
         self.pumps_initialized = True
         self.get_logger().info('Ender3 initialised')
 
     def start_pump(self,key):
         # send Gcode command to move a pump
         if key == 'x':
-            command = 'G1 X{:.2f} F{:.2f}\n'.format(1,4)
+            command = 'G1 X1 F1'
         elif key == 'y':
-            command = 'G1 Y{:.2f} F{:.2f}\n'.format(1,4)
+            command = 'G1 Y1 F1'
         elif key == 'z':
-            command = 'G1 Z{:.2f} F{:.2f}\n'.format(1,4)
-        elif key == 'o':
-            command = 'G1 X{:.2f} Y{:.2f} Z{:.2f} F{:.2f}\n'.format(-10,-10,-10,10)
+            command = 'G1 Z1 F1'
         
         if command != None and self.pumps_initialized == True:
-            self.ser.write(command.encode())
+            self.ser.write(command)
             response = self.ser.readline()
-            self.get_logger().info(response)
+            self.get_logger().info('Serial response:', response)
+
+    def on_key_pressed(self,key):
+        # start pump corresponding to the pressed key
+        if key == 'x':
+            self.start_pump(self, 'x')
+        elif key == 'y':
+            self.start_pump(self, 'y')
+        elif key == 'z':
+            self.start_pump(self, 'z')
 
     # define keyboard input callback function
     def keyboard_input_callback(self,data):
@@ -68,8 +72,8 @@ class KeyController(Node):
         key = data.data
 
         # check if the key is one of the pump control keys
-        if key in ['x', 'y', 'z', 'o']:
-            self.start_pump(key)
+        if key in ['x', 'y', 'z']:
+            self.on_key_pressed(self,key)
         else:
             # ignore other keys
             pass
@@ -78,7 +82,7 @@ class KeyController(Node):
 def main():
     # create a node
     # start the motor control loop
-    rclpy.init()
+    rclpy.init
     key_controller = KeyController()
     rclpy.spin(key_controller)
 

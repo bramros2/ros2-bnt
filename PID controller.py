@@ -13,8 +13,8 @@ class PIDControllerNode(Node):
         self.Kd = 0.2
         self.min_ref = -10
         self.max_ref = 10
-        self.min_output = -1
-        self.max_output = 1
+        self.min_output = 0
+        self.max_output = 20
         self.integral = 0
         self.last_error = 0
         self.last_time = self.get_clock().now()

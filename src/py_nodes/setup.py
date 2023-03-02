@@ -25,7 +25,8 @@ setup(
         	'point = py_nodes.point_node:main',
         	'mask = py_nodes.mask_node:main',
         	'keycontrol = py_nodes.KeypressControl:main',
-        	'teleoppump = py_nodes.teleop_pumps:main'
+        	'teleoppump = py_nodes.teleop_pumps:main',
+        	'dino	    = py_nodes.dinolite:main'
         ],
     },
 )
