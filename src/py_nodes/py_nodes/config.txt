@@ -1,8 +1,8 @@
-hmin = 107
-smin = 111
-vmin = 37
-hmax = 157
-smax = 255
+hmin = 146
+smin = 043
+vmin = 138
+hmax = 168
+smax = 072
 vmax = 162
 blur = 5
 min_size = 10

@@ -49,13 +49,19 @@ class KeyController(Node):
     def start_pump(self,key):
         # send Gcode command to move a pump
         if key == 'x':
-            command = 'G1 X{:.2f} F{:.2f}\n'.format(1,4)
+            command = 'G1 X{:.2f} F{:.2f}\n'.format(2,8)
         elif key == 'y':
-            command = 'G1 Y{:.2f} F{:.2f}\n'.format(1,4)
+            command = 'G1 Y{:.2f} F{:.2f}\n'.format(2,8)
         elif key == 'z':
-            command = 'G1 Z{:.2f} F{:.2f}\n'.format(1,4)
+            command = 'G1 Z{:.2f} F{:.2f}\n'.format(2,8)
         elif key == 'o':
             command = 'G1 X{:.2f} Y{:.2f} Z{:.2f} F{:.2f}\n'.format(-10,-10,-10,10)
+        elif key == 'a':
+            command = 'G1 X{:.2f} Y{:.2f} Z{:.2f} F{:.2f}\n'.format(1,1,1,1)
+        elif key == 'b':
+            command = 'G1 X{:.2f} Y{:.2f} Z{:.2f} F{:.2f}\n'.format(1,1,1,8)
+        elif key == 'p':
+            command = 'G1 X{:.2f} Y{:.2f} F{:.2f}\n'.format(1,1,8)
         
         if command != None and self.pumps_initialized == True:
             self.ser.write(command.encode())
@@ -68,7 +74,7 @@ class KeyController(Node):
         key = data.data
 
         # check if the key is one of the pump control keys
-        if key in ['x', 'y', 'z', 'o']:
+        if key in ['x', 'y', 'z', 'o','a','b','p']:
             self.start_pump(key)
         else:
             # ignore other keys
