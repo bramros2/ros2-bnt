@@ -26,7 +26,8 @@ setup(
         	'mask = py_nodes.mask_node:main',
         	'keycontrol = py_nodes.KeypressControl:main',
         	'teleoppump = py_nodes.teleop_pumps:main',
-        	'dino	    = py_nodes.dinolite:main'
+        	'dino	    = py_nodes.dinolite:main',
+        	'drop_find = py_nodes.droplet_node:main'
         ],
     },
 )

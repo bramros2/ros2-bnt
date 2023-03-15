@@ -24,7 +24,7 @@ class DropletDetector(Node):
         
         self._t0 = time.time()
         
-        self.blob_point = Point()
+    
     
 
         print (">> Publishing image to topic image/flow")
@@ -84,7 +84,7 @@ class DropletDetector(Node):
                 print(e)
 
         for keypoint in keypoints:
-            x, y, w, h = cv2.boundingRect(keypoint.pt)
+            
             x_min = cv_image.shape[1]
             x_max = 0
             y_min = cv_image.shape[0]
@@ -106,20 +106,20 @@ class DropletDetector(Node):
             h = y_max-y_min
             print('Drop width:', w)
             print('Drop height', h)
-            self.blob_point.w = w
-            self.blob_point.h = h
-
-            msgdata = 'w = %s h = %s' % (self.blob_point.w, self.blob_point.h)
+           
+            msgdata = 'w = %s h = %s' % (w, h)
             self.get_logger().info(" %s " % (msgdata))
 
             average_wh = (w+h)/2
-            self.droplet_pub.publish(average_wh)
+            droplet = Float64()
+            droplet.data = average_wh
+            self.droplet_pub.publish(droplet)
 
-            try:
-                cv2.imshow("droplet overlay", cv_image)
-            except CvBridgeError as e:
-                print(e)
-            break
+        try:
+            cv2.imshow("droplet overlay", cv_image)
+        except CvBridgeError as e:
+            print(e)
+            
 
         fps = 1.0/(time.time()-self._t0)
         self._t0 = time.time()
