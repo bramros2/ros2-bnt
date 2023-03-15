@@ -83,43 +83,30 @@ class DropletDetector(Node):
             except CvBridgeError as e:
                 print(e)
 
-        for keypoint in keypoints:
-            
-            x_min = cv_image.shape[1]
-            x_max = 0
-            y_min = cv_image.shape[0]
-            y_max = 0
-            for kp in keypoints:
-                x, y = kp.pt
-                if x < x_min:
-                    x_min = int(x)
-                if x > x_max:
-                    x_max = int(x)
-                if y < y_min:
-                    y_min = int(y)
-                if y > y_max:
-                    y_max = int(y)
+        result = cv_image.copy()
+        contours = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = contours[0] if len(contours) == 2 else contours[1]
+        if len(contours) != 0:
+            # draw in blue the contours that were founded
+            cv2.drawContours(result, contours, -1, 255, 3)
 
-            cv2.rectangle(cv_image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+            # find the biggest countour (c) by the area
+            c = max(contours, key=cv2.contourArea)
+            x, y, w, h = cv2.boundingRect(c)
 
-            w = x_max-x_min
-            h = y_max-y_min
-            print('Drop width:', w)
-            print('Drop height', h)
-           
-            msgdata = 'w = %s h = %s' % (w, h)
-            self.get_logger().info(" %s " % (msgdata))
+            # draw the biggest contour (c) in green
+            cv2.rectangle(result, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # show thresh and result
+        cv2.imshow("bounding_box", cv_image)
+        cv2.waitKey(0)
 
-            average_wh = (w+h)/2
-            droplet = Float64()
-            droplet.data = average_wh
-            self.droplet_pub.publish(droplet)
+        msgdata = 'w = %s h = %s' % (w, h)
+        self.get_logger().info(" %s " % (msgdata))
 
-        try:
-            cv2.imshow("droplet overlay", cv_image)
-        except CvBridgeError as e:
-            print(e)
-            
+        average_wh = (w+h)/2
+        droplet = Float64()
+        droplet.data = average_wh
+        self.droplet_pub.publish(droplet)
 
         fps = 1.0/(time.time()-self._t0)
         self._t0 = time.time()
