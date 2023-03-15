@@ -29,9 +29,9 @@ class PIDControllerNode(Node):
             1)
 
         #Create a subscription to the image detection
-        self.feedrate_subscription = self.create_subscription(
+        self.droplet_subscription = self.create_subscription(
             Float64(), 
-            'flow_width',  
+            'droplet_size',
             self.callback, 
             1)
         
