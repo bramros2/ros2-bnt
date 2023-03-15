@@ -85,6 +85,25 @@ class DropletDetector(Node):
 
         for keypoint in keypoints:
             x, y, w, h = cv2.boundingRect(keypoint.pt)
+            x_min = cv_image.shape[1]
+            x_max = 0
+            y_min = cv_image.shape[0]
+            y_max = 0
+            for kp in keypoints:
+                x, y = kp.pt
+                if x < x_min:
+                    x_min = int(x)
+                if x > x_max:
+                    x_max = int(x)
+                if y < y_min:
+                    y_min = int(y)
+                if y > y_max:
+                    y_max = int(y)
+
+            cv2.rectangle(cv_image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
+
+            w = x_max-x_min
+            h = y_max-y_min
             print('Drop width:', w)
             print('Drop height', h)
             self.blob_point.w = w
@@ -95,10 +114,9 @@ class DropletDetector(Node):
 
             average_wh = (w+h)/2
             self.droplet_pub.publish(average_wh)
-            result = cv2.drawKeypoints(image, keypoints, np.array([]), (0, 0, 255),
-                                       cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
             try:
-                cv2.imshow("droplet overlay", result)
+                cv2.imshow("droplet overlay", cv_image)
             except CvBridgeError as e:
                 print(e)
             break
