@@ -79,5 +79,5 @@ class RangeDetector:
                 break
 
 
-detector = RangeDetector(range_filter='HSV', image = '/Users/bramo/Downloads/droplet.jpg')
+detector = RangeDetector(range_filter='HSV', webcam = True)
 detector.run()

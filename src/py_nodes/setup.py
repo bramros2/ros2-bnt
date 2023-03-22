@@ -27,7 +27,7 @@ setup(
         	'keycontrol = py_nodes.KeypressControl:main',
         	'teleoppump = py_nodes.teleop_pumps:main',
         	'dino	    = py_nodes.dinolite:main',
-        	'drop_find = py_nodes.droplet_node:main'
+        	'drop_find  = py_nodes.droplet_node:main'
         ],
     },
 )

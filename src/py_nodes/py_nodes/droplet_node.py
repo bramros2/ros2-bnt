@@ -7,7 +7,7 @@ from rclpy.node import Node
 from std_msgs.msg import String, Float64
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from flow_detector import *
+from .flow_detector import *
 
 
 class DropletDetector(Node):
@@ -114,11 +114,14 @@ class DropletDetector(Node):
             # Draw circles around the detected droplets
             cv_image = draw_keypoints(cv_image, keypoints)
 
-            # Show the image with the search window and droplets overlaid on top
-            cv2.imshow("Frame overlay", cv_image)
-            # Show image with the threshold mask applied to the original Image
-            cv2.imshow("Mask", mask)
-            cv2.waitKey(1)
+            try:
+                # Show the image with the search window and droplets overlaid on top
+                cv2.imshow("Frame overlay", cv_image)
+                # Show image with the threshold mask applied to the original Image
+                cv2.imshow("Mask", mask)
+                cv2.waitKey(1)
+            except CvBridgeError as e:
+                print(e)
 
         # Calculate the average size of the detected droplets
         result = cv_image.copy()
@@ -133,22 +136,24 @@ class DropletDetector(Node):
             sum += kp.size
             count += 1
 
-        # Calculate average
-        avg = sum / count
+        
+        if count != 0:
+            # Calculate average
+            avg = sum / count
 
-        # Log average diameter
-        msgdata = 'Average diameter size (pixels) =  %s' % (avg)
-        self.get_logger().info(" %s " % (msgdata))
+            # Log average diameter
+            msgdata = 'Average diameter size (pixels) =  %s' % (avg)
+            self.get_logger().info(" %s " % (msgdata))
 
-        # Publish average diameter to topic "droplet_size"
-        droplet = Float64()
-        droplet.data = avg
-        self.droplet_pub.publish(droplet)
+            # Publish average diameter to topic "droplet_size"
+            droplet = Float64()
+            droplet.data = avg
+            self.droplet_pub.publish(droplet)
 
-        # Show the image with circles drawn around the detected droplets
-        cv2.imshow("result", result)
-        cv2.waitKey(0)
-
+            # Show the image with circles drawn around the detected droplets
+            cv2.imshow("result", result)
+            cv2.waitKey(0)
+            
         fps = 1.0/(time.time()-self._t0)
         self._t0 = time.time()
 
