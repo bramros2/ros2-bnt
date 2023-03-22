@@ -129,7 +129,7 @@ def main(args=None):
     #--- detection window respect to camera frame in [x_min, y_min, x_max, y_max] adimensional (0 to 1)
     x_min   = 0.1
     x_max   = 0.9
-    y_min   = 0.4
+    y_min   = 0.1
     y_max   = 0.9
 
     detection_window = [x_min, y_min, x_max, y_max]
