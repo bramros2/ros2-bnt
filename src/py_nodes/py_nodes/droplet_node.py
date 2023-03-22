@@ -152,7 +152,7 @@ class DropletDetector(Node):
 
             # Show the image with circles drawn around the detected droplets
             cv2.imshow("result", result)
-            cv2.waitKey(0)
+            cv2.waitKey(1)
             
         fps = 1.0/(time.time()-self._t0)
         self._t0 = time.time()
